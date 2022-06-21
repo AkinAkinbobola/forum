@@ -5,8 +5,8 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
 const forumRouter = require("./routes/forum");
-const registerRouter = require("./routes/register")
-const loginRouter = require("./routes/login")
+const registerRouter = require("./routes/signup")
+const loginRouter = require("./routes/signin")
 
 
 var app = express();

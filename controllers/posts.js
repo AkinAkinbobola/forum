@@ -1,5 +1,5 @@
 const PostsModel = require("../models/posts");
-const projection = "-_id id title content createdAt";
+const projection = "-_id postID title content createdAt comments";
 
 async function getAllItems(req, res) {
     try{
@@ -28,7 +28,7 @@ async function createItem(req, res){
 
 async function viewItem(req, res) {
     try{
-        const data = await PostsModel.findOne({id: req.params.id}, projection);
+        const data = await PostsModel.findOne({postID: req.params.id}, projection);
 
         if(!data){
             return res.status(404).json({msg: "No data found"});
@@ -41,7 +41,7 @@ async function viewItem(req, res) {
 
 async function deleteItem(req, res) {
     try{
-        const data = await  PostsModel.findOneAndDelete({id: req.params.id});
+        const data = await  PostsModel.findOneAndDelete({postID: req.params.id});
 
         if(!data){
             return res.status(404).json({msg: "No data found"});
@@ -56,7 +56,7 @@ async function deleteItem(req, res) {
 
 async function updateItem(req, res) {
     try{
-        const data = await  PostsModel.findOneAndUpdate({id: req.params.id}, req.body, {
+        const data = await  PostsModel.findOneAndUpdate({postID: req.params.id}, req.body, {
             new: true,
             runValidators: true
         });
