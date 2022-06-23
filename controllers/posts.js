@@ -1,5 +1,5 @@
 const PostsModel = require("../models/posts");
-const projection = "-_id postID title content createdAt comments";
+const projection = "-_id postID title content createdAt";
 
 async function getAllItems(req, res) {
     try{
@@ -15,7 +15,7 @@ async function getAllItems(req, res) {
 
 async function createItem(req, res){
     try{
-        const data = await PostsModel.create(req.body);
+        const data = await PostsModel.create(req.body, );
 
         if(!data){
             return res.status(404).json({msg: "No data found"});

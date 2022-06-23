@@ -1,15 +1,19 @@
 const commentsModel = require("../models/comments")
 const PostsModel = require("../models/posts");
+const mongoose = require("mongoose")
+const objID = mongoose.Types.ObjectId;
 
 
 async function createComment(req, res){
     try{
-        const comment = await commentsModel.create(req.body)
-        const data = await PostsModel.findOneAndUpdate(
-            {postID: req.params.id},
-            {$push: {comments: comment.id}}
-        )
-        res.status(200).json({data})
+        const posts = await PostsModel.findOne({postID: req.params.id})
+        const comment = await commentsModel.create({
+            username: req.body.username,
+            content: req.body.content,
+            post: posts
+        })
+
+        res.status(200).json({comment})
 
     }catch (e) {
         res.status(404).json(e.message)
@@ -19,11 +23,11 @@ async function createComment(req, res){
 
 async function viewComments(req, res){
     try{
-        const data = await PostsModel.findOne({postID: req.params.id}).populate("comments");
+        const data = await commentsModel.findOne({commentID: req.params.commentID}).populate("post");
         if(!data){
             return res.status(404).json({msg: "No data found"});
         }
-        res.status(200).json({comments: data.comments});
+        res.status(200).json(data.post);
     }catch (e) {
         res.status(500).json(e.message);
     }
@@ -31,13 +35,36 @@ async function viewComments(req, res){
 
 async function deleteComment(req, res){
     try{
-        const data = await PostsModel.findOneAndUpdate({ postID: req.params.id }, {
-            '$pull': {
-                'comments':{ '_id': req.params.commentID}
-            }
-        });
-        res.status(200).json({data});
+        const comment = await commentsModel.findOneAndUpdate(
+            {commentID: req.params.commentID},
+            {
+                '$unset': {post: 1}
+            }, {new: true}
+        )
 
+
+        if (!comment){
+            return res.status(404).json({msg: "No comment found"});
+        }
+        res.status(200).json({comment});
+
+    }catch (e) {
+        res.status(500).json(e.message);
+    }
+}
+
+async function updateComment(req, res){
+    try{
+            const post = await commentsModel.findOneAndUpdate(
+                {commentID: req.params.commentID},
+                req.body
+            )
+
+        if (!post){
+            return res.status(404).json({msg: "No post found"});
+        }
+
+        res.status(200).json({post});
     }catch (e) {
         res.status(500).json(e.message);
     }
@@ -46,5 +73,6 @@ async function deleteComment(req, res){
 module.exports = {
     createComment,
     viewComments,
-    deleteComment
+    deleteComment,
+    updateComment
 }

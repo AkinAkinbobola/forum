@@ -14,13 +14,6 @@ const PostsSchema = new mongoose.Schema({
         type: Date,
         default: new Date()
     },
-    comments: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Comment"
-        }
-    ]
-
 });
 
 PostsSchema.plugin(AutoIncrement, {inc_field: 'postID'});
